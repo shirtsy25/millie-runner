@@ -870,7 +870,6 @@
 
             ///SADIE OOGA BOOGA
             var scoreForDatabase = this.distanceMeter.getActualDistance(this.distanceRan);
-            // getScoreFromGame();
 
             // Update the high score.
             if (this.distanceRan > this.highestScore) {

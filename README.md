@@ -1,6 +1,9 @@
 ## originally a t-rex runner game (info below) turned into a Christmas game
 
-![sadie] Modified the sprite page and a little bit of logic to change the visuals of the game to a dog-chasing-a-frisbee. Changes in code were not well-documented as I needed to get this out for Christmas, but shoutout to those who came before me. 
+Modified the sprite page and a little bit of logic to change the visuals of the game to a dog-chasing-a-frisbee with a very Christmas-y feel. Opening gif shows Ryan + Sadie throwing the frisbee. Changes in code were not well-documented as I needed to get this out for Christmas, but shoutout to those who came before me. (main changes include adding snow, intro gif, and sprite changes)
+<br>
+
+![](assets/millie-runner.png)
 
 ## t-rex-runner
 
