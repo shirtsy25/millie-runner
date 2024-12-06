@@ -2962,8 +2962,26 @@
          */
         getGroundHeight: function (gifHeight) {
             var canvasHeight = this.canvas.height;
+            var canvasWidth;
             var windowHeight = window.innerHeight;
-            var hiDPIHeight = windowHeight - canvasHeight + gifHeight*.7 + 2;
+
+            if(IS_HIDPI){
+                canvasWidth = this.canvas.width/2;
+            }else{
+                canvasWidth = this.canvas.width;
+            }
+
+            var hiDPIHeight;     
+
+            //phones are also HDPI, scale according to width of phone for smalls creens
+            if(canvasWidth <= 480){
+                hiDPIHeight = windowHeight - canvasHeight + gifHeight +  Math.floor(Math.abs(480 - canvasWidth)*.14);
+            }else{
+                hiDPIHeight = windowHeight - canvasHeight + gifHeight*.7 + 2;
+            }
+
+            //gifHeight + 8
+            
             var lowDPIHeight = windowHeight - canvasHeight*2 + gifHeight - 8;
 
             if(IS_HIDPI){
