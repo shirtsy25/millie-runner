@@ -505,13 +505,13 @@
                 // Calculate position relative to the T-Rex and ground
 
 
-                let gifWidth = canvas.width*0.15; // Set GIF width as 15% of canvas width
-                
+                var DPR = window.devicePixelRatio; //calculate size based on DPR
+                let gifWidth = (canvas.width/DPR)*0.30; // Set GIF width as 15% of canvas width
 
-                if (!IS_HIDPI) {gifWidth*=1.5;}
+                // if (!IS_HIDPI) {gifWidth *= 1.5;}
+
 
                 const gifHeight = gifWidth; // Assume square GIF
-                
 
                 const groundHeight = this.horizon.getGroundHeight(gifHeight); // Get ground height 
                 const gifBottom = groundHeight; // Align bottom of GIF with the ground
@@ -2346,13 +2346,14 @@
         this.spritePos1 = spritePos1; // First sprite position (for frame 1)
         this.spritePos2 = spritePos2; // Second sprite position (for frame 2)
         this.currentSprite = spritePos1; 
+        var DPR = window.devicePixelRatio;
         
 
         if(IS_HIDPI){
-            this.xPos = canvasWidth/2 - 180; // Fixed x-position
+            this.xPos = canvasWidth/DPR - (canvasWidth/DPR)*.25; // Fixed x-position
             this.yPos = 74; // Fixed y-position (adjust to place in the top third corner)
         }else{
-            this.xPos = canvasWidth - 180; // Fixed x-position
+            this.xPos = canvasWidth - canvasWidth*.25; // Fixed x-position
             this.yPos = 74; // Fixed y-position (adjust to place in the top third corner)
         }
 
@@ -2964,25 +2965,52 @@
             var canvasHeight = this.canvas.height;
             var canvasWidth;
             var windowHeight = window.innerHeight;
+            var DPR = window.devicePixelRatio;
 
             if(IS_HIDPI){
-                canvasWidth = this.canvas.width/2;
+                // canvasWidth = this.canvas.width/2;
+                console.log('received Height: ', this.canvas.height);
+                console.log('calculated Width: ', this.canvas.height/DPR);
+                canvasWidth = this.canvas.width/DPR;
             }else{
                 canvasWidth = this.canvas.width;
             }
 
-            var hiDPIHeight;     
+            var hiDPIHeight;
+
+            console.log(IS_HIDPI);
+            console.log('canvasWidth: ', canvasWidth);
+            console.log('windowHeight: ', windowHeight);
+            console.log('canvasHeight: ', canvasHeight);
+            console.log('adjustedHeight: ', canvasHeight/DPR);
+            console.log('DPR: ', DPR);
+
+            //devicePixelRatio
+
 
             //phones are also HDPI, scale according to width of phone for smalls creens
-            if(canvasWidth <= 480){
-                hiDPIHeight = windowHeight - canvasHeight + gifHeight +  Math.floor(Math.abs(480 - canvasWidth)*.14);
+            if(canvasWidth <= 480 || window.devicePixelRatio > 2){              
+                //for weird resolutions, usually mobile
+                if(DPR > 2){
+                    //151 is default min-height in CSS style sheet
+                    if(canvasHeight/DPR <= 151){
+                        console.log('you are here');
+                        hiDPIHeight = windowHeight - 151*2 + gifHeight + Math.floor(Math.abs(480 - canvasWidth)*.14);
+                    }else{
+                        console.log('now youre here');
+                        hiDPIHeight = windowHeight - (canvasHeight/DPR)*2 + gifHeight;
+                    }                  
+                }else{
+                    hiDPIHeight = windowHeight - canvasHeight + gifHeight + Math.floor(Math.abs(480 - canvasWidth)*.14);
+                    console.log('else');
+                }
             }else{
                 hiDPIHeight = windowHeight - canvasHeight + gifHeight*.7 + 2;
             }
 
-            //gifHeight + 8
+            console.log('hiDPIHeight: ', hiDPIHeight);
             
-            var lowDPIHeight = windowHeight - canvasHeight*2 + gifHeight - 8;
+            var lowDPIHeight = windowHeight - canvasHeight*2 + gifHeight*.7 + 2;
 
             if(IS_HIDPI){
                 return hiDPIHeight;
