@@ -518,12 +518,12 @@
 
                 var leftWidth;
                 if (IS_HIDPI){
-                    leftWidth = (window.innerWidth - this.canvas.width/2)/2;
+                    leftWidth = Math.abs((window.innerWidth - this.canvas.width/DPR)/2);
                 }else{
                     leftWidth = (window.innerWidth - this.canvas.width)/2;
                 }
 
-                // var leftWidth = (window.innerWidth - this.canvas.width/2)/2; // this.canvas.height;
+                
                 if(leftWidth <= 0) { leftWidth = 0;}
 
                 introGif.style.width = `${gifWidth}px`;
@@ -2966,11 +2966,9 @@
             var canvasWidth;
             var windowHeight = window.innerHeight;
             var DPR = window.devicePixelRatio;
+            //devicePixelRatio
 
             if(IS_HIDPI){
-                // canvasWidth = this.canvas.width/2;
-                console.log('received Height: ', this.canvas.height);
-                console.log('calculated Width: ', this.canvas.height/DPR);
                 canvasWidth = this.canvas.width/DPR;
             }else{
                 canvasWidth = this.canvas.width;
@@ -2978,37 +2976,28 @@
 
             var hiDPIHeight;
 
-            console.log(IS_HIDPI);
-            console.log('canvasWidth: ', canvasWidth);
-            console.log('windowHeight: ', windowHeight);
-            console.log('canvasHeight: ', canvasHeight);
-            console.log('adjustedHeight: ', canvasHeight/DPR);
-            console.log('DPR: ', DPR);
 
-            //devicePixelRatio
-
+            // && window.matchMedia("(orientation: portrait)").matches
 
             //phones are also HDPI, scale according to width of phone for smalls creens
             if(canvasWidth <= 480 || window.devicePixelRatio > 2){              
                 //for weird resolutions, usually mobile
-                if(DPR > 2){
-                    //151 is default min-height in CSS style sheet
+                if(DPR >= 3){
+                    //150 is default min-height in CSS style sheet
                     if(canvasHeight/DPR <= 151){
-                        console.log('you are here');
                         hiDPIHeight = windowHeight - 151*2 + gifHeight + Math.floor(Math.abs(480 - canvasWidth)*.14);
+                        if(window.matchMedia("(orientation: landscape)").matches){
+                            hiDPIHeight -= gifHeight/DPR;
+                        }
                     }else{
-                        console.log('now youre here');
                         hiDPIHeight = windowHeight - (canvasHeight/DPR)*2 + gifHeight;
                     }                  
                 }else{
                     hiDPIHeight = windowHeight - canvasHeight + gifHeight + Math.floor(Math.abs(480 - canvasWidth)*.14);
-                    console.log('else');
                 }
             }else{
                 hiDPIHeight = windowHeight - canvasHeight + gifHeight*.7 + 2;
             }
-
-            console.log('hiDPIHeight: ', hiDPIHeight);
             
             var lowDPIHeight = windowHeight - canvasHeight*2 + gifHeight*.7 + 2;
 
@@ -3017,10 +3006,6 @@
             }else{
                 return lowDPIHeight;
             }
-
-            // if (!IS_HIDPI) {gifWidth/=2;}
-            //+8 to shift the gif up above the horizon line
-            // return windowHeight - canvasHeight + gifHeight*.7 + 2; 
         }
 
     };
