@@ -6,7 +6,6 @@
     'use strict';
     /**
      * T-Rex runner.
-     * SADIE change function for crashing height
      * @param {string} outerContainerId Outer containing element id.
      * @param {Object} opt_config
      * @constructor
@@ -100,7 +99,6 @@
     var IS_TOUCH_ENABLED = 'ontouchstart' in window;
 
     /**
-     * SADIE adjust defaults as needed
      * Default game configuration.
      * @enum {number}
      */
@@ -142,7 +140,7 @@
 
 
     /**
-     * sadie useful info
+     * 
      * CSS class names.
      * @enum {string}
      */
@@ -160,7 +158,7 @@
 
 
     /**
-     * sadie ADJUST POSITION FOR SPRITES
+     * 
      * Sprite definition layout of the spritesheet.
      * @enum {Object}
      */
@@ -190,8 +188,8 @@
             TEXT_SPRITE: { x: 1294, y: 2 },
             TREX: { x: 1678, y: 1 },
             STAR: { x: 1276, y: 2 },
-            FRISBEE1: {x: 2445,y: 58}, //SADIE UPDATE WITH FRISBEE POS HDPI
-            FRISBEE2: {x:2466, y: 60}  //SADIE UPDATE WITH FRISBEE POS HDPI
+            FRISBEE1: {x: 2445,y: 58}, 
+            FRISBEE2: {x:2466, y: 60}  
         }
     };
 
@@ -869,7 +867,7 @@
             }
 
             ///SADIE OOGA BOOGA
-            var scoreForDatabase = this.distanceMeter.getActualDistance(this.distanceRan);
+            var submitScore = this.distanceMeter.getActualDistance(this.distanceRan);
 
             // Update the high score.
             if (this.distanceRan > this.highestScore) {
@@ -879,6 +877,47 @@
 
             // Reset the time clock.
             this.time = getTimeStamp();
+
+            // Show display name prompt
+            const namePrompt = document.getElementById('name-prompt');
+            const displayNameInput = document.getElementById('display-name');
+            displayNameInput.value = '';
+
+            // namePrompt.style.visibility = 'visible';
+            namePrompt.style.display = 'block';
+
+
+            document.getElementById('skip-leaderboard').addEventListener('click', () => {
+                // Hide the name prompt
+                const namePrompt = document.getElementById('name-prompt');
+                namePrompt.style.display = 'none';
+
+                // Optionally reset input field
+                // const displayNameInput = document.getElementById('display-name');
+                displayNameInput.value = '';
+
+                // Continue game logic
+                this.restart();
+            });
+
+
+            // Fetch and display the leaderboard if submitted
+            document.getElementById('submit-name').addEventListener('click', async () => {
+                const displayNameInput = document.getElementById('display-name');
+                const displayName = displayNameInput.value.trim();
+
+                if (!displayName) {
+                    alert('Please enter a valid name.');
+                    return;
+                }
+
+                await submitHighScore(displayName, submitScore);
+                namePrompt.style.display = 'none';
+                fetchLeaderboard();
+                const leaderboard = document.getElementById('leaderboard');
+                // leaderboard.style.display = 'contents';
+                leaderboard.style.visibility = 'visible';
+            });
         },
 
         stop: function () {
@@ -915,6 +954,10 @@
                 this.playSound(this.soundFx.BUTTON_PRESS);
                 this.invert(true);
                 this.update();
+                const namePrompt = document.getElementById('name-prompt');
+                namePrompt.style.display = 'none';
+                const leaderboard = document.getElementById('leaderboard');
+                leaderboard.style.display = 'none';
             }
         },
         
@@ -989,7 +1032,7 @@
         }
     };
 
-    /** SADIE LOGIC FOR GIF
+    /** 
      * Show/hide GIF at intro
      */
     function showIntro() {
@@ -1645,13 +1688,12 @@
 
     /**
      * T-rex player config.
-     * sadie
      * @enum {number}
      */
     Trex.config = {
         DROP_VELOCITY: -5,
         GRAVITY: 0.6,
-        HEIGHT: 49, // sadie 47
+        HEIGHT: 49, 
         HEIGHT_DUCK: 25,
         INIITAL_JUMP_VELOCITY: -10,
         INTRO_DURATION: 1500,
@@ -1660,7 +1702,7 @@
         SPEED_DROP_COEFFICIENT: 3,
         SPRITE_WIDTH: 262,
         START_X_POS: 50,
-        WIDTH: 44, // sadie 44
+        WIDTH: 44, 
         WIDTH_DUCK: 59
     };
 
@@ -1687,7 +1729,7 @@
     /**
      * Animation states.
      * @enum {string}
-     * sadie
+     * 
      */
     Trex.status = {
         CRASHED: 'CRASHED',
@@ -1706,7 +1748,7 @@
 
     /**
      * Animation config for different states.
-     * sadie
+     * 
      * @enum {Object}
      */
     Trex.animFrames = {
@@ -1735,7 +1777,7 @@
 
     Trex.prototype = {
         /**
-         * SADIE LEFT OFF HERE
+         * 
          * T-rex player initaliser.
          * Sets the t-rex to blink at random intervals.
          */
@@ -2618,7 +2660,7 @@
     HorizonLine.dimensions = {
         WIDTH: 600, //600
         HEIGHT: 12, //12
-        YPOS: 137 //127 SADIE CHANGED
+        YPOS: 137 //127 
     };
 
 
@@ -3081,6 +3123,61 @@
             });
         }
     }
+
+/***************LEADERBOARD LOGIC*************/
+    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdG9ySWQiOiI2NzUzNTlhYjg2MWM0ZjUwNjI4OGVlYjMiLCJzY29yZWJvYXJkSWQiOiJkcjliMGdtdiIsImlhdCI6MTczNDA2MDQwOX0.XWG3y2iQ25Rl1-KI_n2YBMt3nSr0xcd_MiQHh2rNLDM';
+    const SCOREBOARD_ID = 'dr9b0gmv';
+    const API_URL = `https://bq-server.onrender.com/api/result/${SCOREBOARD_ID}`;
+
+    async function submitHighScore(username, score) {
+        const data = {
+            displayTitle: username,
+            points: score, // Use `points` for numerical scores
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': API_KEY,
+                },
+                body: JSON.stringify(data),
+            });
+
+            // if (response.ok) {
+            //     console.log('High score submitted successfully!');
+            // } else {
+            //     console.error('Failed to submit high score:', response.statusText);
+            // }
+        } catch (error) {
+            console.error('Error submitting high score:', error);
+        }
+    }
+
+    async function fetchLeaderboard() {
+        try {
+            const response = await fetch(`https://bq-server.onrender.com/api/results/${SCOREBOARD_ID}`, {
+                method: 'GET',
+                headers: {
+                    'apikey': API_KEY,
+                },
+            });
+
+            if (response.ok) {
+                const leaderboard = await response.json();
+                console.log('Leaderboard:', leaderboard);
+
+                // Update your game UI with the leaderboard data
+            } else {
+                console.error('Failed to fetch leaderboard:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+        }
+    }
+
+
 })();
 
 
@@ -3089,4 +3186,3 @@ function onDocumentLoad() {
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
-
