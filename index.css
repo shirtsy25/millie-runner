@@ -186,12 +186,10 @@ html, body {
 }
 
 /*LEADERBOARD STYLING*/
-#leaderboard{
-/*  visibility:hidden;*/
+/*#leaderboard{
   z-index: 3 !important;
   position: absolute;
   visibility: hidden;
-/*  display: none;*/
 }
 #namePrompt{
   z-index: 100;
@@ -209,3 +207,4 @@ body #leaderboard {
   display: block;
   margin: auto;
 }
+*/
